@@ -2,19 +2,20 @@ import { moment } from "obsidian";
 import en from "./locales/en";
 import es from "./locales/es";
 
-const locales: { [key: string]: typeof en } = {
+const locales: Record<string, typeof en> = {
 	en,
 	es,
 };
 
 /**
  * Translation helper for the plugin.
- * Uses Obsidian's current language (via moment) or falls back to English.
  */
 export function t(key: keyof typeof en, vars?: { [key: string]: string | number }): string {
 	const lang = moment.locale();
 	const locale = locales[lang] || locales.en;
-	let text = locale[key] || locales.en[key] || key;
+	
+	// Safety check to ensure we always have a string
+	let text: string = (locale as any)[key] || (locales.en as any)[key] || key;
 
 	if (vars) {
 		Object.keys(vars).forEach((v) => {

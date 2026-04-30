@@ -10,10 +10,6 @@ import {
 	ImageHoistSettingTab
 } from "./settings";
 
-/**
- * Main Obsidian Plugin class for Image Hoist.
- * Orchestrates settings, services, and event registration.
- */
 export default class ImageHoistPlugin extends Plugin {
 	settings: ImageHoistSettings;
 	processor: ImageProcessor;
@@ -24,31 +20,34 @@ export default class ImageHoistPlugin extends Plugin {
 		await this.loadSettings();
 		this.addSettingTab(new ImageHoistSettingTab(this.app, this));
 
-		// Core Services
 		this.vaultAdapter = new ObsidianVaultAdapter(this.app);
 		
-		// Setup context menu target tracking
 		this.registerDomEvent(document, "contextmenu", (evt: MouseEvent) => {
 			this.lastContextTarget = evt.target as HTMLElement;
 		}, { capture: true });
 
-		// Initialize Uploader and Processor
 		const apiKey = this.app.secretStorage.getSecret(this.settings.imgbbApiKey) || "";
 		if (!apiKey) {
 			new Notice("ImgBB API key is missing. Please configure it in the plugin settings.");
 		}
 
 		const uploaderAdapter = new ImgBBUploaderAdapter(apiKey);
-		this.processor = new ImageProcessor(uploaderAdapter, this.vaultAdapter);
+		
+		this.processor = new ImageProcessor(
+			uploaderAdapter, 
+			this.vaultAdapter,
+			this.settings.uploadCache,
+			async (hash, url) => {
+				this.settings.uploadCache[hash] = url;
+				await this.saveSettings();
+			}
+		);
 
-		// Feature Registration
 		registerCommands(this, this.processor);
 		registerContextMenu(this);
 	}
 
-	onunload() {
-		// Obsidian handles automatic cleanup of registered events and commands
-	}
+	onunload() {}
 
 	async loadSettings() {
 		this.settings = Object.assign(

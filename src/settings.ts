@@ -1,70 +1,48 @@
-import { App, Notice, PluginSettingTab, SecretComponent, Setting } from "obsidian";
-import ImgHoistPlugin from "./main";
+import { App, PluginSettingTab, Setting } from "obsidian";
+import ImageHoistPlugin from "./main";
 
 export interface ImageHoistSettings {
 	imgbbApiKey: string;
 	deleteAfterUpload: boolean;
-	bulkUploadLimit: number;
-	uploadCache: Record<string, string>;
+	uploadCache: Record<string, string>; // Maps SHA-256 hash to ImgBB URL
 }
 
 export const DEFAULT_SETTINGS: ImageHoistSettings = {
 	imgbbApiKey: "",
-	deleteAfterUpload: true,
-	bulkUploadLimit: 10,
+	deleteAfterUpload: false,
 	uploadCache: {},
 };
 
 export class ImageHoistSettingTab extends PluginSettingTab {
-	plugin: ImgHoistPlugin;
+	plugin: ImageHoistPlugin;
 
-	constructor(app: App, plugin: ImgHoistPlugin) {
+	constructor(app: App, plugin: ImageHoistPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 
 	display(): void {
 		const { containerEl } = this;
-
 		containerEl.empty();
 
 		new Setting(containerEl)
 			.setName("ImgBB API key")
-			.setDesc("Select or create a secret from SecretStorage")
-			.addComponent((el) => {
-				return new SecretComponent(this.app, el)
+			.setDesc("Enter your ImgBB API key")
+			.addText((text) =>
+				text
+					.setPlaceholder("Enter your API key")
 					.setValue(this.plugin.settings.imgbbApiKey)
 					.onChange(async (value) => {
 						this.plugin.settings.imgbbApiKey = value;
+						// Store in secret storage for security
+						await this.app.secretStorage.setSecret(this.plugin.settings.imgbbApiKey, value);
 						await this.plugin.saveSettings();
-					});
-			});
-
-		new Setting(containerEl)
-			.setName("Bulk upload limit")
-			.setDesc(
-				"Maximum images per batch upload. Default is 10 (max 20).",
-			)
-			.addText((text) =>
-				text
-					.setPlaceholder("5")
-					.setValue(this.plugin.settings.bulkUploadLimit.toString())
-					.onChange(async (value) => {
-						const num = parseInt(value);
-						if (!isNaN(num)) {
-							this.plugin.settings.bulkUploadLimit = Math.min(
-								20,
-								Math.max(1, num),
-							);
-							await this.plugin.saveSettings();
-						}
 					}),
 			);
+
 		new Setting(containerEl)
-			.setName("Delete local file after upload")
-			.setDesc(
-				"Dangerous: automatically move the vault image to trash after a successfully upload. Use with caution!",
-			)
+			.setName("Delete local image after upload")
+			.setDesc("Move the local image file to trash after a successful hoist")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.deleteAfterUpload)
@@ -73,21 +51,20 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					}),
 			);
-
+		
 		new Setting(containerEl)
 			.setName("Clear upload cache")
-			.setDesc(
-				"Forgot which images have been uploaded. This will force re-uploading if the same image is encountered again.",
-			)
-			.addButton((button) => {
-				button
-					.setButtonText("Clear cache")
+			.setDesc("Reset the local cache of uploaded images. This will not delete remote images.")
+			.addButton((btn) => 
+				btn
+					.setButtonText("Clear Cache")
 					.setWarning()
 					.onClick(async () => {
 						this.plugin.settings.uploadCache = {};
 						await this.plugin.saveSettings();
-						new Notice("Upload cache cleared");
-					});
-			});
+						containerEl.empty();
+						this.display();
+					})
+			);
 	}
 }

@@ -1,5 +1,6 @@
 import { ImageUploader } from "../ports/uploader";
 import { VaultService } from "../ports/vault";
+import { getContentHash } from "../../utils/crypto-utils";
 
 export interface ImageMetadata {
 	path: string;
@@ -9,32 +10,32 @@ export interface ImageMetadata {
 	originalLink: string;
 }
 
-/**
- * Core business logic for processing and hoisting images.
- * Decoupled from Obsidian APIs via VaultService and ImageUploader ports.
- */
 export class ImageProcessor {
 	constructor(
 		private uploader: ImageUploader,
 		private vault: VaultService,
+		private cache: Record<string, string>,
+		private onCacheUpdate: (hash: string, url: string) => Promise<void>,
 	) {}
 
-	/**
-	 * Uploads a single image and returns the markdown link representation.
-	 */
 	async processImage(
 		fileData: ArrayBuffer,
 		fileName: string,
 		altText = "",
 	): Promise<string> {
+		const hash = await getContentHash(fileData);
+
+		if (this.cache[hash]) {
+			return `![${altText}](${this.cache[hash]})`;
+		}
+
 		const url = await this.uploader.upload(fileData, fileName);
-		// Preserves the altText which might contain original filename and dimensions
+		
+		await this.onCacheUpdate(hash, url);
+		
 		return `![${altText}](${url})`;
 	}
 
-	/**
-	 * Hoists a single image at a specific location in a note.
-	 */
 	async hoistSingleImage(
 		notePath: string,
 		image: ImageMetadata,
@@ -46,7 +47,6 @@ export class ImageProcessor {
 			const data = await this.vault.readBinary(image.path);
 			const newLink = await this.processImage(data, image.name, image.originalLink);
 
-			// Precise string replacement based on offsets
 			content = content.substring(0, image.start) + newLink + content.substring(image.end);
 
 			await this.vault.writeFile(notePath, content);
@@ -59,18 +59,11 @@ export class ImageProcessor {
 		}
 	}
 
-	/**
-	 * Hoists all local images found in a note.
-	 * Replaces them in reverse order to ensure offsets remain valid during processing.
-	 */
 	async hoistAllImages(notePath: string, deleteAfterUpload = false): Promise<number> {
 		const images = await this.vault.getImagesInFile(notePath);
 		if (images.length === 0) return 0;
 
 		let content = await this.vault.readFile(notePath);
-
-		// Important: sort by start offset descending to avoid shifting the content 
-		// while we replace multiple instances of text.
 		const sortedImages = [...images].sort((a, b) => b.start - a.start);
 		let processedCount = 0;
 
