@@ -50,7 +50,7 @@ export default class ImageHoistPlugin extends Plugin {
 
 		// Minimal logging on startup, no intrusive Notices
 		if (!apiKey) {
-			console.log("Image Hoist: API Key not set. Features will be available but uploads will prompt for configuration.");
+			console.debug("Image Hoist: API Key not set. Features will be available but uploads will prompt for configuration.");
 		}
 	}
 

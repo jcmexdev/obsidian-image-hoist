@@ -20,6 +20,13 @@ export interface BatchResult {
 	cacheCount: number;
 }
 
+/**
+ * Interface for uploaders that support dynamic API key updates.
+ */
+interface DynamicUploader extends ImageUploader {
+	setApiKey(key: string): void;
+}
+
 export class ImageProcessor {
 	constructor(
 		private uploader: ImageUploader,
@@ -28,9 +35,13 @@ export class ImageProcessor {
 		private onCacheUpdate: (hash: string, url: string) => Promise<void>,
 	) {}
 
+	/**
+	 * Updates the API key if the uploader supports it.
+	 */
 	updateApiKey(key: string) {
-		if ((this.uploader as any).setApiKey) {
-			(this.uploader as any).setApiKey(key);
+		const dynamicUploader = this.uploader as Partial<DynamicUploader>;
+		if (typeof dynamicUploader.setApiKey === "function") {
+			dynamicUploader.setApiKey(key);
 		}
 	}
 

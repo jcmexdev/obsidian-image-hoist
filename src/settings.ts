@@ -1,5 +1,5 @@
-import { App, Notice, PluginSettingTab, Setting, SecretComponent } from "obsidian";
-import ImageHoistPlugin, { API_KEY_SECRET } from "./main";
+import { App, PluginSettingTab, Setting, SecretComponent } from "obsidian";
+import ImageHoistPlugin from "./main";
 import { ConfirmationModal } from "./ui/modals/confirmation-modal";
 
 export interface ImageHoistSettings {
@@ -7,7 +7,7 @@ export interface ImageHoistSettings {
 	bulkUploadLimit: number;
 	uploadCache: Record<string, string>;
 	imgbbApiKey: string;
-	autoHoist: boolean; // New setting for auto-upload
+	autoHoist: boolean;
 }
 
 export const DEFAULT_SETTINGS: ImageHoistSettings = {
@@ -30,7 +30,7 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		containerEl.createEl("h2", { text: "Image Hoist Settings" });
+		new Setting(containerEl).setHeading().setName("Image hoist settings");
 
 		// API Key
 		new Setting(containerEl)
@@ -49,7 +49,7 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 
 		// Auto Hoist Toggle
 		new Setting(containerEl)
-			.setName("Auto-hoist on paste/drag")
+			.setName("Auto-hoist on paste or drag")
 			.setDesc("Automatically upload images to ImgBB when pasting or dragging them into the editor.")
 			.addToggle((toggle) =>
 				toggle
@@ -88,14 +88,14 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 					}),
 			);
 		
-		containerEl.createEl("h3", { text: "Maintenance" });
+		new Setting(containerEl).setHeading().setName("Maintenance");
 
 		new Setting(containerEl)
 			.setName("Clear upload cache")
 			.setDesc("Reset the local cache of uploaded images.")
 			.addButton((btn) => 
 				btn
-					.setButtonText("Clear Cache")
+					.setButtonText("Clear cache")
 					.setWarning()
 					.onClick(() => {
 						new ConfirmationModal(

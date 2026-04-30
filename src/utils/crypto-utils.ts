@@ -1,5 +1,5 @@
 /**
- * Generates a SHA-256 hash for the given binary data.
+ * Generates a SHA-256 hash from an ArrayBuffer.
  */
 export async function getContentHash(data: ArrayBuffer): Promise<string> {
 	const hashBuffer = await crypto.subtle.digest("SHA-256", data);

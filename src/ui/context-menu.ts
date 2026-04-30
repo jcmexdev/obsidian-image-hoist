@@ -4,6 +4,9 @@ import { ConfirmationModal } from "./modals/confirmation-modal";
 import { t } from "../i18n";
 import { extractOriginalLink } from "../utils/markdown-utils";
 
+/**
+ * Registers the context menu events for the plugin.
+ */
 export function registerContextMenu(plugin: ImageHoistPlugin) {
 	plugin.registerEvent(
 		plugin.app.workspace.on("editor-menu", (menu: Menu, editor: Editor, view: MarkdownView) => {
@@ -92,7 +95,7 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 									} catch (error) {
 										const msg = error instanceof Error ? error.message : String(error);
 										new Notice(`Error: ${msg}`);
-										console.error("Image Hoist Error:", error);
+										console.error("Image hoist error:", error);
 									}
 								};
 
@@ -135,7 +138,7 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 								} catch (error) {
 									const msg = error instanceof Error ? error.message : String(error);
 									new Notice(`Error: ${msg}`);
-									console.error("Image Hoist Error:", error);
+									console.error("Image hoist error:", error);
 								}
 							};
 
