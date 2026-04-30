@@ -11,29 +11,28 @@ import {
 
 export default class ImageHoistPlugin extends Plugin {
 	settings: ImageHoistSettings;
+	processor: ImageProcessor;
+	vaultAdapter: ObsidianVaultAdapter;
 
 	async onload() {
 		await this.loadSettings();
 		this.addSettingTab(new ImageHoistSettingTab(this.app, this));
 
-		const vaultAdapter = new ObsidianVaultAdapter(this.app);
+		this.vaultAdapter = new ObsidianVaultAdapter(this.app);
 
-		// Fallback to settings if secretStorage is not yet populated
-		const apiKey = this.settings.imgbbApiKey;
+		const apiKey = this.app.secretStorage.getSecret(this.settings.imgbbApiKey) || "";
 		
 		if (!apiKey) {
 			new Notice("ImgBB API key is missing. Please configure it in the plugin settings.");
-			// We still register commands, but they might fail if the key is missing later
 		}
 
 		const uploaderAdapter = new ImgBBUploaderAdapter(apiKey);
-		const processor = new ImageProcessor(uploaderAdapter, vaultAdapter);
+		this.processor = new ImageProcessor(uploaderAdapter, this.vaultAdapter);
 
-		registerCommands(this, processor);
+		registerCommands(this, this.processor);
 	}
 
 	onunload() {}
-	
 
 	async loadSettings() {
 		this.settings = Object.assign(
