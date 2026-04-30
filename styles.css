@@ -1,8 +1,51 @@
-/*
+/* Image Hoist Premium Modal Styles */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.image-hoist-modal {
+    padding: 20px;
+    max-width: 400px;
+}
 
-If your plugin does not need CSS, delete this file.
+.image-hoist-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
 
-*/
+.image-hoist-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-accent);
+}
+
+.image-hoist-modal-title {
+    margin: 0;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+.image-hoist-modal-message {
+    font-size: 1.1em;
+    line-height: 1.5;
+    color: var(--text-normal);
+    margin-bottom: 24px;
+}
+
+.image-hoist-modal-footer {
+    border-top: none;
+    padding: 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.image-hoist-modal-footer .setting-item {
+    border-top: none;
+    padding: 0;
+    width: 100%;
+}
+
+.image-hoist-modal-footer .setting-item-control {
+    justify-content: flex-end;
+    gap: 8px;
+}

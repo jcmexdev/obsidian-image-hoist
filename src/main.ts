@@ -10,6 +10,8 @@ import {
 	ImageHoistSettingTab
 } from "./settings";
 
+export const API_KEY_SECRET = "obsidian-image-hoist-api-key";
+
 export default class ImageHoistPlugin extends Plugin {
 	settings: ImageHoistSettings;
 	processor: ImageProcessor;
@@ -26,13 +28,9 @@ export default class ImageHoistPlugin extends Plugin {
 			this.lastContextTarget = evt.target as HTMLElement;
 		}, { capture: true });
 
-		const apiKey = this.app.secretStorage.getSecret(this.settings.imgbbApiKey) || "";
-		if (!apiKey) {
-			new Notice("ImgBB API key is missing. Please configure it in the plugin settings.");
-		}
-
-		const uploaderAdapter = new ImgBBUploaderAdapter(apiKey);
+		const apiKey = this.app.secretStorage.getSecret(API_KEY_SECRET) || "";
 		
+		const uploaderAdapter = new ImgBBUploaderAdapter(apiKey);
 		this.processor = new ImageProcessor(
 			uploaderAdapter, 
 			this.vaultAdapter,
@@ -45,6 +43,10 @@ export default class ImageHoistPlugin extends Plugin {
 
 		registerCommands(this, this.processor);
 		registerContextMenu(this);
+
+		if (!apiKey) {
+			new Notice("Image Hoist: ImgBB API Key not found. Please set it in the plugin settings.");
+		}
 	}
 
 	onunload() {}

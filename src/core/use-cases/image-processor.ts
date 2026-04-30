@@ -18,6 +18,15 @@ export class ImageProcessor {
 		private onCacheUpdate: (hash: string, url: string) => Promise<void>,
 	) {}
 
+	/**
+	 * Updates the API key in the uploader service.
+	 */
+	updateApiKey(key: string) {
+		if ((this.uploader as any).setApiKey) {
+			(this.uploader as any).setApiKey(key);
+		}
+	}
+
 	async processImage(
 		fileData: ArrayBuffer,
 		fileName: string,

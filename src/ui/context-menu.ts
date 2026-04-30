@@ -29,7 +29,6 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 			const localImages = [];
 
 			if (cache?.embeds) {
-				// Filter local images only for the "Hoist All" option
 				for (const embed of cache.embeds) {
 					if (!embed.link.startsWith("http://") && !embed.link.startsWith("https://")) {
 						const imageFile = plugin.app.metadataCache.getFirstLinkpathDest(embed.link, view.file.path);
@@ -40,7 +39,6 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 				}
 
 				if (foundImageLink) {
-					// Only proceed if it's not a remote link
 					if (!foundImageLink.startsWith("http://") && !foundImageLink.startsWith("https://")) {
 						const cleanPath = foundImageLink.replace(/^(app|capacitor):\/\/[^/]+\//, "");
 						const decodedPath = decodeURI(cleanPath);
@@ -51,7 +49,6 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 					}
 				}
 
-				// Fallback to cursor position
 				if (!imageEmbed) {
 					const offset = editor.posToOffset(editor.getCursor());
 					imageEmbed = localImages.find(
@@ -60,7 +57,6 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 				}
 			}
 
-			// Individual option: only if a local image is selected/clicked
 			if (imageEmbed) {
 				const currentEmbed = imageEmbed;
 				const imageFile = plugin.app.metadataCache.getFirstLinkpathDest(
@@ -89,7 +85,9 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 										);
 										new Notice(t("NOTICE_SUCCESS_SINGLE", { name: imageFile.name }));
 									} catch (error) {
-										new Notice(t("NOTICE_ERROR_SINGLE", { name: imageFile.name }));
+										// Show the actual error message in the Notice for better feedback
+										const msg = error instanceof Error ? error.message : String(error);
+										new Notice(`Error: ${msg}`);
 										console.error("Image Hoist Error:", error);
 									}
 								};
@@ -108,7 +106,6 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 				}
 			}
 
-			// Global option: only if there is at least one local image in the note
 			if (localImages.length > 0) {
 				menu.addItem((item) => {
 					item.setTitle(t("CONTEXT_MENU_HOIST_ALL"))
@@ -124,7 +121,8 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 									);
 									new Notice(t("NOTICE_SUCCESS_ALL", { count }));
 								} catch (error) {
-									new Notice(t("NOTICE_ERROR_ALL"));
+									const msg = error instanceof Error ? error.message : String(error);
+									new Notice(`Error: ${msg}`);
 									console.error("Image Hoist Error:", error);
 								}
 							};
@@ -147,4 +145,3 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 		}),
 	);
 }
-

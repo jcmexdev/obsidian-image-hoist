@@ -41,7 +41,8 @@ export async function hoistImagesInCurrentNote(plugin: ImageHoistPlugin, process
 				);
 				new Notice(t("NOTICE_SUCCESS_ALL", { count: processed }));
 			} catch (error) {
-				new Notice(t("NOTICE_ERROR_ALL"));
+				const msg = error instanceof Error ? error.message : String(error);
+				new Notice(`Error: ${msg}`);
 				console.error("Image Hoist Error:", error);
 			}
 		}
