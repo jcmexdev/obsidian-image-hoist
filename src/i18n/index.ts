@@ -14,16 +14,22 @@ const locales: Record<string, LocaleType> = {
  * Translation helper for the plugin.
  */
 export function t(key: keyof LocaleType, vars: Record<string, string | number> = {}): string {
-	const lang = moment.locale();
+	const obsidianLang = window.localStorage.getItem("language");
+	const lang = (obsidianLang || moment.locale()).split("-")[0] || "en";
+	
 	const locale = locales[lang] || locales.en;
 	
-	// Use non-null assertion safely as locales.en is hardcoded
 	const fallback = locales.en!;
 	let text = (locale ? locale[key] : fallback[key]) || fallback[key] || key;
 
 	Object.keys(vars).forEach((v) => {
 		text = text.replace(`{{${v}}}`, String(vars[v]));
 	});
+
+	// Debug log to identify why it's not showing Spanish
+	if (lang === "es" && text === fallback[key] && locale[key] === undefined) {
+		console.debug(`Image Hoist i18n: Key "${key}" not found in "es" locale, falling back to "en".`);
+	}
 
 	return text;
 }

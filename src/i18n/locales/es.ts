@@ -3,8 +3,8 @@ export default {
 	COMMAND_HOIST_ALL: "Subir todas las imágenes de la nota",
 	
 	// Context Menu
-	CONTEXT_MENU_HOIST_SINGLE: "Subir esta imagen",
-	CONTEXT_MENU_HOIST_ALL: "Subir todas las imágenes de esta nota",
+	CONTEXT_MENU_HOIST_SINGLE: "Subir esta imagen (hoist)",
+	CONTEXT_MENU_HOIST_ALL: "Subir todas las imágenes de esta nota (hoist)",
 	
 	// Modals
 	MODAL_CONFIRM_TITLE: "Confirmar subida de imágenes",
@@ -25,4 +25,21 @@ export default {
 	NOTICE_ERROR_SINGLE: "Error al subir {{name}}. Revisa la consola.",
 	NOTICE_NO_IMAGES: "No se han encontrado imágenes locales en esta nota.",
 	NOTICE_NO_MARKDOWN: "No se ha encontrado ninguna nota activa.",
+	NOTICE_CACHE_CLEARED: "¡La caché de subidas se ha limpiado con éxito!",
+
+	// Settings
+	SETTINGS_TITLE: "Ajustes de Image hoist",
+	SETTINGS_API_KEY_NAME: "Clave API de ImgBB",
+	SETTINGS_API_KEY_DESC: "Selecciona el secreto que contiene tu clave API de ImgBB del SecretStorage de Obsidian.",
+	SETTINGS_AUTO_HOIST_NAME: "Subida automática al pegar o arrastrar",
+	SETTINGS_AUTO_HOIST_DESC: "Sube imágenes a ImgBB automáticamente al pegarlas o arrastrarlas al editor.",
+	SETTINGS_BULK_LIMIT_NAME: "Límite de subida por lote",
+	SETTINGS_BULK_LIMIT_DESC: "Máximo de imágenes a subir por nota (1-20)",
+	SETTINGS_DELETE_NAME: "Borrar imagen local tras subir",
+	SETTINGS_DELETE_DESC: "Mueve el archivo local a la papelera tras una subida exitosa.",
+	SETTINGS_MAINTENANCE: "Mantenimiento",
+	SETTINGS_CLEAR_CACHE_NAME: "Limpiar caché de subidas",
+	SETTINGS_CLEAR_CACHE_DESC: "Reinicia el historial local de imágenes subidas.",
+	SETTINGS_CLEAR_CACHE_BUTTON: "Limpiar caché",
+	SETTINGS_CLEAR_CACHE_CONFIRM: "¿Estás seguro de que quieres limpiar la caché de subidas?",
 };

@@ -1,4 +1,5 @@
-import { App, PluginSettingTab, Setting, SecretComponent } from "obsidian";
+import { App, Notice, PluginSettingTab, SecretComponent, Setting } from "obsidian";
+import { t } from "./i18n";
 import ImageHoistPlugin from "./main";
 import { ConfirmationModal } from "./ui/modals/confirmation-modal";
 
@@ -30,12 +31,12 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 		containerEl.empty();
 
-		new Setting(containerEl).setHeading().setName("Image hoist settings");
+		new Setting(containerEl).setHeading().setName(t("SETTINGS_TITLE"));
 
 		// API Key
 		new Setting(containerEl)
-			.setName("ImgBB API key")
-			.setDesc("Select the secret for ImgBB API key.")
+			.setName(t("SETTINGS_API_KEY_NAME"))
+			.setDesc(t("SETTINGS_API_KEY_DESC"))
 			.addComponent((el) => 
 				new SecretComponent(this.app, el)
 					.setValue(this.plugin.settings.imgbbApiKey)
@@ -49,8 +50,8 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 
 		// Auto Hoist Toggle
 		new Setting(containerEl)
-			.setName("Auto-hoist on paste or drag")
-			.setDesc("Automatically upload images to ImgBB when pasting or dragging them into the editor.")
+			.setName(t("SETTINGS_AUTO_HOIST_NAME"))
+			.setDesc(t("SETTINGS_AUTO_HOIST_DESC"))
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.autoHoist)
@@ -62,8 +63,8 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 
 		// Bulk Upload Limit
 		new Setting(containerEl)
-			.setName("Bulk upload limit")
-			.setDesc("Maximum images to hoist per note (1-20)")
+			.setName(t("SETTINGS_BULK_LIMIT_NAME"))
+			.setDesc(t("SETTINGS_BULK_LIMIT_DESC"))
 			.addSlider((slider) => 
 				slider
 					.setLimits(1, 20, 1)
@@ -77,8 +78,8 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 
 		// Delete After Upload
 		new Setting(containerEl)
-			.setName("Delete local image after upload")
-			.setDesc("Move local file to trash after successful hoist.")
+			.setName(t("SETTINGS_DELETE_NAME"))
+			.setDesc(t("SETTINGS_DELETE_DESC"))
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.deleteAfterUpload)
@@ -88,22 +89,23 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 					}),
 			);
 		
-		new Setting(containerEl).setHeading().setName("Maintenance");
+		new Setting(containerEl).setHeading().setName(t("SETTINGS_MAINTENANCE"));
 
 		new Setting(containerEl)
-			.setName("Clear upload cache")
-			.setDesc("Reset the local cache of uploaded images.")
+			.setName(t("SETTINGS_CLEAR_CACHE_NAME"))
+			.setDesc(t("SETTINGS_CLEAR_CACHE_DESC"))
 			.addButton((btn) => 
 				btn
-					.setButtonText("Clear cache")
+					.setButtonText(t("SETTINGS_CLEAR_CACHE_BUTTON"))
 					.setWarning()
 					.onClick(() => {
 						new ConfirmationModal(
 							this.app,
-							"Are you sure you want to clear the upload cache?",
+							t("SETTINGS_CLEAR_CACHE_CONFIRM"),
 							async () => {
 								this.plugin.settings.uploadCache = {};
 								await this.plugin.saveSettings();
+								new Notice(t("NOTICE_CACHE_CLEARED"));
 								this.display();
 							},
 							true

@@ -25,4 +25,21 @@ export default {
 	NOTICE_ERROR_SINGLE: "Failed to hoist {{name}}. Check console.",
 	NOTICE_NO_IMAGES: "No local images found in this note.",
 	NOTICE_NO_MARKDOWN: "No active markdown note found.",
+	NOTICE_CACHE_CLEARED: "Upload cache cleared successfully!",
+
+	// Settings
+	SETTINGS_TITLE: "Image hoist settings",
+	SETTINGS_API_KEY_NAME: "ImgBB API key",
+	SETTINGS_API_KEY_DESC: "Select the secret that contains your ImgBB API key from Obsidian's SecretStorage.",
+	SETTINGS_AUTO_HOIST_NAME: "Auto-hoist on paste or drag",
+	SETTINGS_AUTO_HOIST_DESC: "Automatically upload images to ImgBB when pasting or dragging them into the editor.",
+	SETTINGS_BULK_LIMIT_NAME: "Bulk upload limit",
+	SETTINGS_BULK_LIMIT_DESC: "Maximum images to hoist per note (1-20)",
+	SETTINGS_DELETE_NAME: "Delete local image after upload",
+	SETTINGS_DELETE_DESC: "Move local file to trash after successful hoist.",
+	SETTINGS_MAINTENANCE: "Maintenance",
+	SETTINGS_CLEAR_CACHE_NAME: "Clear upload cache",
+	SETTINGS_CLEAR_CACHE_DESC: "Reset the local cache of uploaded images.",
+	SETTINGS_CLEAR_CACHE_BUTTON: "Clear cache",
+	SETTINGS_CLEAR_CACHE_CONFIRM: "Are you sure you want to clear the upload cache?",
 };
