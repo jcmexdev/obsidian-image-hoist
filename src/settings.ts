@@ -1,21 +1,21 @@
 import { App, Notice, PluginSettingTab, SecretComponent, Setting } from "obsidian";
 import ImgHoistPlugin from "./main";
 
-export interface ImgHoistSettings {
+export interface ImageHoistSettings {
 	imgbbApiKey: string;
 	deleteAfterUpload: boolean;
 	bulkUploadLimit: number;
 	uploadCache: Record<string, string>;
 }
 
-export const DEFAULT_SETTINGS: ImgHoistSettings = {
+export const DEFAULT_SETTINGS: ImageHoistSettings = {
 	imgbbApiKey: "",
 	deleteAfterUpload: true,
 	bulkUploadLimit: 10,
 	uploadCache: {},
 };
 
-export class ImgHoistSettingTab extends PluginSettingTab {
+export class ImageHoistSettingTab extends PluginSettingTab {
 	plugin: ImgHoistPlugin;
 
 	constructor(app: App, plugin: ImgHoistPlugin) {

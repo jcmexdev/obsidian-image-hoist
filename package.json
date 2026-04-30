@@ -8,7 +8,9 @@
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"test": "vitest",
+		"test:ui": "vitest --ui"
 	},
 	"keywords": [],
 	"license": "0-BSD",
@@ -16,7 +18,8 @@
 	"repository": "jcmexdev/obsidian-image-hoist",
 	"devDependencies": {
 		"@eslint/js": "9.30.1",
-		"@types/node": "^16.11.6",
+		"@types/node": "^25.6.0",
+		"@vitest/ui": "^4.1.5",
 		"esbuild": "0.25.5",
 		"eslint": "^9.21.0",
 		"eslint-plugin-obsidianmd": "0.1.9",
@@ -25,6 +28,7 @@
 		"obsidian": "^1.12.3",
 		"tslib": "2.4.0",
 		"typescript": "^5.8.3",
-		"typescript-eslint": "8.35.1"
+		"typescript-eslint": "8.35.1",
+		"vitest": "^4.1.5"
 	}
 }
