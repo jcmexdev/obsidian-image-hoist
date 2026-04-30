@@ -122,7 +122,7 @@ export class ImageProcessor {
 				processedCount++;
 				if (result.isCacheHit) cacheCount++;
 			} catch (error) {
-				console.error(`Failed to process ${img.name}:`, error);
+				// We still throw or ignore quietly as per user request to remove logs
 			}
 		}
 

@@ -68,6 +68,5 @@ async function handleFileAutoHoist(file: File, editor: Editor, plugin: ImageHois
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : String(error);
 		new Notice(`Error: ${msg}`);
-		console.error("Auto-hoist Error:", error);
 	}
 }

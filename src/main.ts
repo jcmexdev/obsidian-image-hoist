@@ -47,11 +47,6 @@ export default class ImageHoistPlugin extends Plugin {
 		registerCommands(this, this.processor);
 		registerContextMenu(this);
 		registerAutoHoistHandler(this);
-
-		// Minimal logging on startup, no intrusive Notices
-		if (!apiKey) {
-			console.debug("Image Hoist: API Key not set. Features will be available but uploads will prompt for configuration.");
-		}
 	}
 
 	onunload() {}

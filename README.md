@@ -1,38 +1,37 @@
 # Image Hoist for Obsidian
 
-Image Hoist is an Obsidian plugin designed to optimize your vault's storage and portability by automatically offloading local images to [ImgBB](https://imgbb.com/).
+![hero.png](https://i.ibb.co/21VF4jVd/hero-png.jpg)
 
-## Core Objective
+**Stop worrying about heavy notes and broken images.** 
 
-The primary goal of this plugin is to detect local images in your vault, upload them to ImgBB, and replace the local file references with remote markdown links. This keeps your vault lightweight and makes your notes easier to share and sync.
+Image Hoist is the ultimate tool to keep your Obsidian vault light, fast, and 100% shareable. It automatically takes your local images, moves them to the cloud ([ImgBB](https://imgbb.com/)), and replaces them with links that work anywhere.
 
-## Features
+## 🌟 Why you need Image Hoist
 
-- **Automatic Upload:** Automatically detects and uploads local images.
-- **Link Replacement:** Replaces `![[image.png]]` or `![](image.png)` with remote ImgBB links.
-- **Storage Optimization:** Reduces the size of your vault by removing binary image files after successful upload.
-- **Portability:** Access your images from any device without needing to sync large binary files.
+- **Save Massive Space**: Stop hoarding gigabytes of images in your vault. Keep your storage for what matters: your ideas.
+- **Lightning-Fast Sync**: Since your images are in the cloud, syncing your notes across devices (mobile, tablet, desktop) becomes instant.
+- **Share Without Friction**: When you copy-paste a note to a blog, email, or another person, your images will actually show up! No more broken links.
+- **Zero Effort**: Paste an image and forget about it. The plugin handles the upload and link replacement in the background.
 
-## Installation
+## 🚀 Key Benefits
 
-### From Obsidian (Not yet available)
-1. Go to **Settings** > **Community plugins** > **Browse**.
-2. Search for "Image Hoist".
-3. Click **Install**, then **Enable**.
+- **Set and Forget**: Enable "Auto-hoist" and every image you paste goes straight to the cloud. No local files, no clutter.
+- **Smart Uploads**: Already uploaded the same image? The plugin is smart enough to recognize it and reuse the existing link instantly.
+- **Note Cleanup**: Got an old note full of local images? One click and the whole note is "hoisted" to the cloud.
+- **Safe & Secure**: Your images are yours. Your access keys are kept private and secure within Obsidian.
 
-### Manual Installation
-1. Download the latest release (`main.js`, `manifest.json`, `styles.css`).
-2. Create a folder named `obsidian-image-hoist` in your vault's `.obsidian/plugins/` directory.
-3. Move the downloaded files into that folder.
-4. Reload Obsidian and enable the plugin in **Settings** > **Community plugins**.
+## 🛠️ Quick Start
 
-## Configuration
+1. **Install**: Add the plugin to your Obsidian vault.
+2. **Connect**: Get a free key from [ImgBB](https://api.imgbb.com/) and paste it into the plugin settings.
+3. **Enjoy**: Start pasting images or right-click any existing image to "hoist" it.
 
-You will need an **ImgBB API Key** to use this plugin:
-1. Create a free account at [ImgBB](https://imgbb.com/).
-2. Get your API key from [ImgBB API settings](https://api.imgbb.com/).
-3. Paste the key into the plugin settings in Obsidian.
+## 📖 How to use it
 
-## License
+- **Drag & Drop**: Just drag an image into your note—it goes straight to the cloud (if enabled).
+- **Right-Click**: See a local image? Right-click and select **Hoist this image**.
+- **The Magic Button**: Use the Command Palette (`Cmd/Ctrl + P`) and run **Hoist all images in current note** to clean up an entire page at once.
 
-This project is licensed under the MIT License.
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).

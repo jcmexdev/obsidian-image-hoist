@@ -95,7 +95,6 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 									} catch (error) {
 										const msg = error instanceof Error ? error.message : String(error);
 										new Notice(`Error: ${msg}`);
-										console.error("Image hoist error:", error);
 									}
 								};
 
@@ -138,7 +137,6 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 								} catch (error) {
 									const msg = error instanceof Error ? error.message : String(error);
 									new Notice(`Error: ${msg}`);
-									console.error("Image hoist error:", error);
 								}
 							};
 
