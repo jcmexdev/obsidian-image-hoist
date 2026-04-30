@@ -72,7 +72,7 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 								const processAction = async () => {
 									new Notice(t("NOTICE_STARTING_SINGLE", { name: imageFile.name }));
 									try {
-										await plugin.processor.hoistSingleImage(
+										const isCacheHit = await plugin.processor.hoistSingleImage(
 											view.file!.path,
 											{
 												path: imageFile.path,
@@ -83,9 +83,13 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 											},
 											plugin.settings.deleteAfterUpload,
 										);
-										new Notice(t("NOTICE_SUCCESS_SINGLE", { name: imageFile.name }));
+										
+										if (isCacheHit) {
+											new Notice(t("NOTICE_SUCCESS_CACHE", { name: imageFile.name }));
+										} else {
+											new Notice(t("NOTICE_SUCCESS_SINGLE", { name: imageFile.name }));
+										}
 									} catch (error) {
-										// Show the actual error message in the Notice for better feedback
 										const msg = error instanceof Error ? error.message : String(error);
 										new Notice(`Error: ${msg}`);
 										console.error("Image Hoist Error:", error);
@@ -114,12 +118,20 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 							const processAllAction = async () => {
 								new Notice(t("NOTICE_STARTING_ALL", { count: localImages.length }));
 								try {
-									const count = await plugin.processor.hoistAllImages(
+									const result = await plugin.processor.hoistAllImages(
 										view.file!.path,
 										plugin.settings.deleteAfterUpload,
 										plugin.settings.bulkUploadLimit
 									);
-									new Notice(t("NOTICE_SUCCESS_ALL", { count }));
+									
+									if (result.cacheCount > 0) {
+										new Notice(t("NOTICE_SUCCESS_ALL_CACHE", { 
+											count: result.processedCount, 
+											cacheCount: result.cacheCount 
+										}));
+									} else {
+										new Notice(t("NOTICE_SUCCESS_ALL", { count: result.processedCount }));
+									}
 								} catch (error) {
 									const msg = error instanceof Error ? error.message : String(error);
 									new Notice(`Error: ${msg}`);

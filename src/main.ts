@@ -1,16 +1,15 @@
 import { ImgBBUploaderAdapter } from "core/adapters/imgbb-uploader";
 import { ObsidianVaultAdapter } from "core/adapters/obsidian-vault";
 import { ImageProcessor } from "core/use-cases/image-processor";
-import { Notice, Plugin } from "obsidian";
+import { Plugin } from "obsidian";
 import { registerCommands } from "./commands";
 import { registerContextMenu } from "./ui/context-menu";
+import { registerAutoHoistHandler } from "./ui/auto-hoist-handler";
 import {
 	DEFAULT_SETTINGS,
 	ImageHoistSettings,
 	ImageHoistSettingTab
 } from "./settings";
-
-export const API_KEY_SECRET = "obsidian-image-hoist-api-key";
 
 export default class ImageHoistPlugin extends Plugin {
 	settings: ImageHoistSettings;
@@ -28,7 +27,11 @@ export default class ImageHoistPlugin extends Plugin {
 			this.lastContextTarget = evt.target as HTMLElement;
 		}, { capture: true });
 
-		const apiKey = this.app.secretStorage.getSecret(API_KEY_SECRET) || "";
+		// 1. Get the Secret ID from settings
+		const secretId = this.settings.imgbbApiKey;
+		
+		// 2. Retrieve the actual key from SecretStorage using that ID
+		const apiKey = secretId ? (this.app.secretStorage.getSecret(secretId) || "") : "";
 		
 		const uploaderAdapter = new ImgBBUploaderAdapter(apiKey);
 		this.processor = new ImageProcessor(
@@ -43,9 +46,11 @@ export default class ImageHoistPlugin extends Plugin {
 
 		registerCommands(this, this.processor);
 		registerContextMenu(this);
+		registerAutoHoistHandler(this);
 
+		// Minimal logging on startup, no intrusive Notices
 		if (!apiKey) {
-			new Notice("Image Hoist: ImgBB API Key not found. Please set it in the plugin settings.");
+			console.log("Image Hoist: API Key not set. Features will be available but uploads will prompt for configuration.");
 		}
 	}
 

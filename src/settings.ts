@@ -1,12 +1,13 @@
 import { App, Notice, PluginSettingTab, Setting, SecretComponent } from "obsidian";
-import ImageHoistPlugin from "./main";
+import ImageHoistPlugin, { API_KEY_SECRET } from "./main";
 import { ConfirmationModal } from "./ui/modals/confirmation-modal";
 
 export interface ImageHoistSettings {
 	deleteAfterUpload: boolean;
 	bulkUploadLimit: number;
 	uploadCache: Record<string, string>;
-	imgbbApiKey: string; // This stores the KEY NAME in SecretStorage
+	imgbbApiKey: string;
+	autoHoist: boolean; // New setting for auto-upload
 }
 
 export const DEFAULT_SETTINGS: ImageHoistSettings = {
@@ -14,6 +15,7 @@ export const DEFAULT_SETTINGS: ImageHoistSettings = {
 	bulkUploadLimit: 10,
 	uploadCache: {},
 	imgbbApiKey: "",
+	autoHoist: false,
 };
 
 export class ImageHoistSettingTab extends PluginSettingTab {
@@ -30,27 +32,38 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 
 		containerEl.createEl("h2", { text: "Image Hoist Settings" });
 
-		// API Key Setting using the native Secret Component
+		// API Key
 		new Setting(containerEl)
 			.setName("ImgBB API key")
-			.setDesc("Select the secret that contains your ImgBB API key from Obsidian's SecretStorage.")
+			.setDesc("Select the secret for ImgBB API key.")
 			.addComponent((el) => 
 				new SecretComponent(this.app, el)
 					.setValue(this.plugin.settings.imgbbApiKey)
 					.onChange(async (value) => {
 						this.plugin.settings.imgbbApiKey = value;
 						await this.plugin.saveSettings();
-						
-						// Get the actual secret value and update the processor
 						const actualKey = this.app.secretStorage.getSecret(value) || "";
 						this.plugin.processor.updateApiKey(actualKey);
 					})
 			);
 
+		// Auto Hoist Toggle
+		new Setting(containerEl)
+			.setName("Auto-hoist on paste/drag")
+			.setDesc("Automatically upload images to ImgBB when pasting or dragging them into the editor.")
+			.addToggle((toggle) =>
+				toggle
+					.setValue(this.plugin.settings.autoHoist)
+					.onChange(async (value) => {
+						this.plugin.settings.autoHoist = value;
+						await this.plugin.saveSettings();
+					}),
+			);
+
 		// Bulk Upload Limit
 		new Setting(containerEl)
 			.setName("Bulk upload limit")
-			.setDesc("Maximum number of images to hoist per note (1-20)")
+			.setDesc("Maximum images to hoist per note (1-20)")
 			.addSlider((slider) => 
 				slider
 					.setLimits(1, 20, 1)
@@ -62,10 +75,10 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 					})
 			);
 
-		// Delete After Upload Toggle
+		// Delete After Upload
 		new Setting(containerEl)
 			.setName("Delete local image after upload")
-			.setDesc("Automatically move the local image file to trash after a successful hoist.")
+			.setDesc("Move local file to trash after successful hoist.")
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.deleteAfterUpload)

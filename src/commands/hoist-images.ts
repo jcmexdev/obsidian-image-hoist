@@ -34,12 +34,20 @@ export async function hoistImagesInCurrentNote(plugin: ImageHoistPlugin, process
 		async () => {
 			new Notice(t("NOTICE_STARTING_ALL", { count: imageCount }));
 			try {
-				const processed = await processor.hoistAllImages(
+				const result = await processor.hoistAllImages(
 					noteFile.path,
 					plugin.settings.deleteAfterUpload,
 					plugin.settings.bulkUploadLimit
 				);
-				new Notice(t("NOTICE_SUCCESS_ALL", { count: processed }));
+				
+				if (result.cacheCount > 0) {
+					new Notice(t("NOTICE_SUCCESS_ALL_CACHE", { 
+						count: result.processedCount, 
+						cacheCount: result.cacheCount 
+					}));
+				} else {
+					new Notice(t("NOTICE_SUCCESS_ALL", { count: result.processedCount }));
+				}
 			} catch (error) {
 				const msg = error instanceof Error ? error.message : String(error);
 				new Notice(`Error: ${msg}`);

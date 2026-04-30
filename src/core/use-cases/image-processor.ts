@@ -10,6 +10,16 @@ export interface ImageMetadata {
 	originalLink: string;
 }
 
+export interface ProcessResult {
+	link: string;
+	isCacheHit: boolean;
+}
+
+export interface BatchResult {
+	processedCount: number;
+	cacheCount: number;
+}
+
 export class ImageProcessor {
 	constructor(
 		private uploader: ImageUploader,
@@ -18,9 +28,6 @@ export class ImageProcessor {
 		private onCacheUpdate: (hash: string, url: string) => Promise<void>,
 	) {}
 
-	/**
-	 * Updates the API key in the uploader service.
-	 */
 	updateApiKey(key: string) {
 		if ((this.uploader as any).setApiKey) {
 			(this.uploader as any).setApiKey(key);
@@ -31,44 +38,46 @@ export class ImageProcessor {
 		fileData: ArrayBuffer,
 		fileName: string,
 		altText = "",
-	): Promise<string> {
+	): Promise<ProcessResult> {
 		const hash = await getContentHash(fileData);
-		console.debug(`Image Hoist: Processing ${fileName} with hash ${hash}`);
 
 		if (this.cache[hash]) {
-			console.debug(`Image Hoist: Cache hit for ${fileName}. URL: ${this.cache[hash]}`);
-			return `![${altText}](${this.cache[hash]})`;
+			return {
+				link: `![${altText}](${this.cache[hash]})`,
+				isCacheHit: true
+			};
 		}
 
-		console.debug(`Image Hoist: Cache miss for ${fileName}, uploading to ImgBB...`);
 		const url = await this.uploader.upload(fileData, fileName);
-		
 		await this.onCacheUpdate(hash, url);
-		console.debug(`Image Hoist: Upload success for ${fileName}. New URL: ${url}`);
 		
-		return `![${altText}](${url})`;
+		return {
+			link: `![${altText}](${url})`,
+			isCacheHit: false
+		};
 	}
 
 	async hoistSingleImage(
 		notePath: string,
 		image: ImageMetadata,
 		deleteAfterUpload = false,
-	): Promise<void> {
+	): Promise<boolean> {
 		const content = await this.vault.readFile(notePath);
 
 		try {
 			const data = await this.vault.readBinary(image.path);
-			const newLink = await this.processImage(data, image.name, image.originalLink);
+			const result = await this.processImage(data, image.name, image.originalLink);
 
-			const updatedContent = content.substring(0, image.start) + newLink + content.substring(image.end);
+			const updatedContent = content.substring(0, image.start) + result.link + content.substring(image.end);
 
 			await this.vault.writeFile(notePath, updatedContent);
 
 			if (deleteAfterUpload) {
 				await this.vault.deleteFile(image.path);
 			}
+
+			return result.isCacheHit;
 		} catch (error) {
-			console.error(`Image Hoist Error [Single]:`, error);
 			throw new Error(`Failed to hoist image ${image.name}: ${String(error)}`);
 		}
 	}
@@ -77,46 +86,39 @@ export class ImageProcessor {
 		notePath: string, 
 		deleteAfterUpload = false,
 		limit = 10
-	): Promise<number> {
+	): Promise<BatchResult> {
 		const images = await this.vault.getImagesInFile(notePath);
-		console.debug(`Image Hoist: Found ${images.length} images in file. Limit is ${limit}.`);
-		
-		if (images.length === 0) return 0;
+		if (images.length === 0) return { processedCount: 0, cacheCount: 0 };
 
 		const limitedImages = images.slice(0, limit);
 		let content = await this.vault.readFile(notePath);
 
 		const sortedImages = [...limitedImages].sort((a, b) => b.start - a.start);
-		console.debug(`Image Hoist: Starting batch processing of ${sortedImages.length} images.`);
-		
 		let processedCount = 0;
+		let cacheCount = 0;
 
 		for (const img of sortedImages) {
 			try {
-				console.debug(`Image Hoist: Reading binary for ${img.path}`);
 				const data = await this.vault.readBinary(img.path);
-				
-				console.debug(`Image Hoist: Processing image logic for ${img.name}`);
-				const newLink = await this.processImage(data, img.name, img.originalLink);
+				const result = await this.processImage(data, img.name, img.originalLink);
 
-				console.debug(`Image Hoist: Replacing text at ${img.start}-${img.end}`);
-				content = content.substring(0, img.start) + newLink + content.substring(img.end);
+				content = content.substring(0, img.start) + result.link + content.substring(img.end);
 
 				if (deleteAfterUpload) {
 					await this.vault.deleteFile(img.path);
 				}
 
 				processedCount++;
+				if (result.isCacheHit) cacheCount++;
 			} catch (error) {
-				console.error(`Image Hoist: Failed to process ${img.name}:`, error);
+				console.error(`Failed to process ${img.name}:`, error);
 			}
 		}
 
 		if (processedCount > 0) {
-			console.debug(`Image Hoist: Writing updated content to ${notePath}`);
 			await this.vault.writeFile(notePath, content);
 		}
 
-		return processedCount;
+		return { processedCount, cacheCount };
 	}
 }

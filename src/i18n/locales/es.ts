@@ -17,9 +17,11 @@ export default {
 	// Notices
 	NOTICE_STARTING_ALL: "Iniciando subida de {{count}} imágenes...",
 	NOTICE_SUCCESS_ALL: "¡Se han subido {{count}} imágenes con éxito!",
+	NOTICE_SUCCESS_ALL_CACHE: "¡Se han procesado {{count}} imágenes ({{cacheCount}} desde la caché)!",
 	NOTICE_ERROR_ALL: "Error durante el proceso de subida. Revisa la consola.",
 	NOTICE_STARTING_SINGLE: "Subiendo imagen: {{name}}...",
 	NOTICE_SUCCESS_SINGLE: "¡{{name}} subida con éxito!",
+	NOTICE_SUCCESS_CACHE: "¡{{name}} recuperada de la caché con éxito!",
 	NOTICE_ERROR_SINGLE: "Error al subir {{name}}. Revisa la consola.",
 	NOTICE_NO_IMAGES: "No se han encontrado imágenes locales en esta nota.",
 	NOTICE_NO_MARKDOWN: "No se ha encontrado ninguna nota activa.",
