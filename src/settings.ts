@@ -1,15 +1,15 @@
-import { App, Notice, PluginSettingTab, Setting } from "obsidian";
+import { App, Notice, PluginSettingTab, SecretComponent, Setting } from "obsidian";
 import ImgHoistPlugin from "./main";
 
 export interface ImgHoistSettings {
-	mySetting: string;
+	imgbbApiKey: string;
 	deleteAfterUpload: boolean;
 	bulkUploadLimit: number;
 	uploadCache: Record<string, string>;
 }
 
 export const DEFAULT_SETTINGS: ImgHoistSettings = {
-	mySetting: "",
+	imgbbApiKey: "",
 	deleteAfterUpload: true,
 	bulkUploadLimit: 10,
 	uploadCache: {},
@@ -27,19 +27,17 @@ export class ImgHoistSettingTab extends PluginSettingTab {
 		const { containerEl } = this;
 
 		containerEl.empty();
-		new Setting(containerEl).setName("ImgBB API key").setHeading();
 
 		new Setting(containerEl)
-			.setName("ImgBB API")
-			.setDesc("It's a secret")
-			.addText((text) => {
-				text
-					.setPlaceholder("Enter your API key")
-					.setValue(this.plugin.settings.mySetting)
+			.setName("ImgBB API key")
+			.setDesc("Select or create a secret from SecretStorage")
+			.addComponent((el) => {
+				return new SecretComponent(this.app, el)
+					.setValue(this.plugin.settings.imgbbApiKey)
 					.onChange(async (value) => {
-						this.plugin.settings.mySetting = value;
+						this.plugin.settings.imgbbApiKey = value;
 						await this.plugin.saveSettings();
-					})
+					});
 			});
 
 		new Setting(containerEl)
