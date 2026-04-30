@@ -27,7 +27,8 @@ describe('ImageProcessor', () => {
         const result = await processor.processImage(dummyData, 'test.png', 'imagen.png|100');
 
         // Assert
-        expect(result).toBe('![imagen.png|100](https://imgbb.com/image123.png)');
+        expect(result.link).toBe('![imagen.png|100](https://imgbb.com/image123.png)');
+        expect(result.isCacheHit).toBe(false);
         expect(uploadMock).toHaveBeenCalledWith(dummyData, 'test.png');
         expect(onCacheUpdate).toHaveBeenCalled();
     });
@@ -54,7 +55,8 @@ describe('ImageProcessor', () => {
         const result = await processor.processImage(new ArrayBuffer(0), 'test.png', 'alt');
         
         // Assert
-        expect(result).toBe('![alt](https://imgbb.com/cached.png)');
+        expect(result.link).toBe('![alt](https://imgbb.com/cached.png)');
+        expect(result.isCacheHit).toBe(true);
         expect(uploadMock).not.toHaveBeenCalled();
     });
 });
