@@ -37,6 +37,7 @@ export async function hoistImagesInCurrentNote(plugin: ImageHoistPlugin, process
 				const processed = await processor.hoistAllImages(
 					noteFile.path,
 					plugin.settings.deleteAfterUpload,
+					plugin.settings.bulkUploadLimit
 				);
 				new Notice(t("NOTICE_SUCCESS_ALL", { count: processed }));
 			} catch (error) {

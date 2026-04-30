@@ -4,9 +4,6 @@ import { ConfirmationModal } from "./modals/confirmation-modal";
 import { t } from "../i18n";
 import { extractOriginalLink } from "../utils/markdown-utils";
 
-/**
- * Registers the editor context menu events to provide image hoisting options.
- */
 export function registerContextMenu(plugin: ImageHoistPlugin) {
 	plugin.registerEvent(
 		plugin.app.workspace.on("editor-menu", (menu: Menu, editor: Editor, view: MarkdownView) => {
@@ -15,7 +12,7 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 			let foundImageLink = "";
 			let imageEmbed = null;
 
-			// 1. Attempt detection by clicked DOM element (accurate in Live Preview)
+			// 1. DOM detection
 			const target = plugin.lastContextTarget;
 			if (target) {
 				if (target.tagName === "IMG") {
@@ -28,27 +25,42 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 				}
 			}
 
-			// 2. Lookup link in cache
 			const cache = plugin.app.metadataCache.getFileCache(view.file);
-			if (cache?.embeds) {
-				if (foundImageLink) {
-					const cleanPath = foundImageLink.replace(/^(app|capacitor):\/\/[^/]+\//, "");
-					const decodedPath = decodeURI(cleanPath);
+			const localImages = [];
 
-					imageEmbed = cache.embeds.find(
-						(e) => e.link === decodedPath || decodedPath.endsWith(e.link),
-					);
+			if (cache?.embeds) {
+				// Filter local images only for the "Hoist All" option
+				for (const embed of cache.embeds) {
+					if (!embed.link.startsWith("http://") && !embed.link.startsWith("https://")) {
+						const imageFile = plugin.app.metadataCache.getFirstLinkpathDest(embed.link, view.file.path);
+						if (imageFile instanceof TFile) {
+							localImages.push(embed);
+						}
+					}
 				}
 
-				// 3. Fallback to cursor position (Source Mode)
+				if (foundImageLink) {
+					// Only proceed if it's not a remote link
+					if (!foundImageLink.startsWith("http://") && !foundImageLink.startsWith("https://")) {
+						const cleanPath = foundImageLink.replace(/^(app|capacitor):\/\/[^/]+\//, "");
+						const decodedPath = decodeURI(cleanPath);
+
+						imageEmbed = cache.embeds.find(
+							(e) => e.link === decodedPath || decodedPath.endsWith(e.link),
+						);
+					}
+				}
+
+				// Fallback to cursor position
 				if (!imageEmbed) {
 					const offset = editor.posToOffset(editor.getCursor());
-					imageEmbed = cache.embeds.find(
+					imageEmbed = localImages.find(
 						(e) => offset >= e.position.start.offset && offset <= e.position.end.offset,
 					);
 				}
 			}
 
+			// Individual option: only if a local image is selected/clicked
 			if (imageEmbed) {
 				const currentEmbed = imageEmbed;
 				const imageFile = plugin.app.metadataCache.getFirstLinkpathDest(
@@ -96,39 +108,43 @@ export function registerContextMenu(plugin: ImageHoistPlugin) {
 				}
 			}
 
-			// Global "Hoist all" option in context menu
-			menu.addItem((item) => {
-				item.setTitle(t("CONTEXT_MENU_HOIST_ALL"))
-					.setIcon("layers")
-					.onClick(async () => {
-						const processAllAction = async () => {
-							new Notice(t("NOTICE_STARTING_ALL", { count: "..." }));
-							try {
-								const count = await plugin.processor.hoistAllImages(
-									view.file!.path,
-									plugin.settings.deleteAfterUpload,
-								);
-								new Notice(t("NOTICE_SUCCESS_ALL", { count }));
-							} catch (error) {
-								new Notice(t("NOTICE_ERROR_ALL"));
-								console.error("Image Hoist Error:", error);
-							}
-						};
+			// Global option: only if there is at least one local image in the note
+			if (localImages.length > 0) {
+				menu.addItem((item) => {
+					item.setTitle(t("CONTEXT_MENU_HOIST_ALL"))
+						.setIcon("layers")
+						.onClick(async () => {
+							const processAllAction = async () => {
+								new Notice(t("NOTICE_STARTING_ALL", { count: localImages.length }));
+								try {
+									const count = await plugin.processor.hoistAllImages(
+										view.file!.path,
+										plugin.settings.deleteAfterUpload,
+										plugin.settings.bulkUploadLimit
+									);
+									new Notice(t("NOTICE_SUCCESS_ALL", { count }));
+								} catch (error) {
+									new Notice(t("NOTICE_ERROR_ALL"));
+									console.error("Image Hoist Error:", error);
+								}
+							};
 
-						if (plugin.settings.deleteAfterUpload) {
-							new ConfirmationModal(
-								plugin.app,
-								t("MODAL_CONFIRM_ALL", {
-									count: "note",
-									trash: t("MODAL_TRASH_WARNING"),
-								}),
-								processAllAction,
-							).open();
-						} else {
-							await processAllAction();
-						}
-					});
-			});
+							if (plugin.settings.deleteAfterUpload) {
+								new ConfirmationModal(
+									plugin.app,
+									t("MODAL_CONFIRM_ALL", {
+										count: localImages.length,
+										trash: t("MODAL_TRASH_WARNING"),
+									}),
+									processAllAction,
+								).open();
+							} else {
+								await processAllAction();
+							}
+						});
+				});
+			}
 		}),
 	);
 }
+

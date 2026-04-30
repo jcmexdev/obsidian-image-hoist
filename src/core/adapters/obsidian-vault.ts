@@ -4,7 +4,6 @@ import { extractOriginalLink } from "../../utils/markdown-utils";
 
 /**
  * Obsidian-specific implementation of the VaultService.
- * Handles interaction with Obsidian's internal filesystem and metadata cache.
  */
 export class ObsidianVaultAdapter implements VaultService {
 	constructor(private app: App) {}
@@ -20,7 +19,6 @@ export class ObsidianVaultAdapter implements VaultService {
 	async deleteFile(path: string): Promise<void> {
 		const file = this.app.vault.getAbstractFileByPath(path);
 		if (file instanceof TFile) {
-			// Moves to trash instead of permanent deletion for safety
 			await this.app.fileManager.trashFile(file);
 		}
 	}
@@ -44,6 +42,11 @@ export class ObsidianVaultAdapter implements VaultService {
 		}[] = [];
 
 		for (const embed of cache.embeds) {
+			// Skip remote links (http/https)
+			if (embed.link.startsWith("http://") || embed.link.startsWith("https://")) {
+				continue;
+			}
+
 			const imageFile = this.app.metadataCache.getFirstLinkpathDest(embed.link, file.path);
 
 			if (

@@ -4,12 +4,14 @@ import ImageHoistPlugin from "./main";
 export interface ImageHoistSettings {
 	imgbbApiKey: string;
 	deleteAfterUpload: boolean;
-	uploadCache: Record<string, string>; // Maps SHA-256 hash to ImgBB URL
+	bulkUploadLimit: number;
+	uploadCache: Record<string, string>;
 }
 
 export const DEFAULT_SETTINGS: ImageHoistSettings = {
 	imgbbApiKey: "",
 	deleteAfterUpload: false,
+	bulkUploadLimit: 10,
 	uploadCache: {},
 };
 
@@ -34,10 +36,23 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 					.setValue(this.plugin.settings.imgbbApiKey)
 					.onChange(async (value) => {
 						this.plugin.settings.imgbbApiKey = value;
-						// Store in secret storage for security
 						await this.app.secretStorage.setSecret(this.plugin.settings.imgbbApiKey, value);
 						await this.plugin.saveSettings();
 					}),
+			);
+
+		new Setting(containerEl)
+			.setName("Bulk upload limit")
+			.setDesc("Maximum number of images to hoist per note (1-20)")
+			.addSlider((slider) => 
+				slider
+					.setLimits(1, 20, 1)
+					.setValue(this.plugin.settings.bulkUploadLimit)
+					.setDynamicTooltip()
+					.onChange(async (value) => {
+						this.plugin.settings.bulkUploadLimit = value;
+						await this.plugin.saveSettings();
+					})
 			);
 
 		new Setting(containerEl)
@@ -54,7 +69,7 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 		
 		new Setting(containerEl)
 			.setName("Clear upload cache")
-			.setDesc("Reset the local cache of uploaded images. This will not delete remote images.")
+			.setDesc("Reset the local cache of uploaded images.")
 			.addButton((btn) => 
 				btn
 					.setButtonText("Clear Cache")
@@ -62,7 +77,6 @@ export class ImageHoistSettingTab extends PluginSettingTab {
 					.onClick(async () => {
 						this.plugin.settings.uploadCache = {};
 						await this.plugin.saveSettings();
-						containerEl.empty();
 						this.display();
 					})
 			);
