@@ -17,7 +17,9 @@ export function t(key: keyof LocaleType, vars: Record<string, string | number> =
 	const lang = moment.locale();
 	const locale = locales[lang] || locales.en;
 	
-	let text = locale![key] || locales.en[key] || key;
+	// Use non-null assertion safely as locales.en is hardcoded
+	const fallback = locales.en!;
+	let text = (locale ? locale[key] : fallback[key]) || fallback[key] || key;
 
 	Object.keys(vars).forEach((v) => {
 		text = text.replace(`{{${v}}}`, String(vars[v]));
