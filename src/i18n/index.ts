@@ -1,4 +1,4 @@
-import { moment } from "obsidian";
+import { moment, getLanguage } from "obsidian";
 import en from "./locales/en";
 import es from "./locales/es";
 
@@ -14,7 +14,7 @@ const locales: Record<string, LocaleType> = {
  * Translation helper for the plugin.
  */
 export function t(key: keyof LocaleType, vars: Record<string, string | number> = {}): string {
-	const obsidianLang = window.localStorage.getItem("language");
+	const obsidianLang = getLanguage();
 	const lang = (obsidianLang || moment.locale()).split("-")[0] || "en";
 	
 	const locale = locales[lang] || locales.en;

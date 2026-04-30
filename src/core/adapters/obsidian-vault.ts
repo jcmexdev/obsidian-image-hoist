@@ -23,14 +23,14 @@ export class ObsidianVaultAdapter implements VaultService {
 		}
 	}
 
-	async getImagesInFile(
+	getImagesInFile(
 		path: string,
 	): Promise<{ path: string; name: string; start: number; end: number; originalLink: string }[]> {
 		const file = this.app.vault.getAbstractFileByPath(path);
-		if (!(file instanceof TFile)) return [];
+		if (!(file instanceof TFile)) return Promise.resolve([]);
 
 		const cache = this.app.metadataCache.getFileCache(file);
-		if (!cache?.embeds) return [];
+		if (!cache?.embeds) return Promise.resolve([]);
 
 		const imageExtensions = ["png", "jpg", "jpeg", "gif", "webp", "svg"];
 		const images: {
@@ -63,7 +63,7 @@ export class ObsidianVaultAdapter implements VaultService {
 			}
 		}
 
-		return images;
+		return Promise.resolve(images);
 	}
 
 	async readFile(path: string): Promise<string> {

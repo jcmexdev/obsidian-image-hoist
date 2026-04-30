@@ -10,7 +10,7 @@ export default {
 	MODAL_CONFIRM_TITLE: "Confirm image hoist",
 	MODAL_CONFIRM_SINGLE: "Are you sure you want to hoist \"{{name}}\"? The local file will be moved to trash.",
 	MODAL_CONFIRM_ALL: "Found {{count}} local images. Do you want to hoist them to ImgBB and replace the links?{{trash}}",
-	MODAL_TRASH_WARNING: " (Local files will be moved to trash)",
+	MODAL_TRASH_WARNING: "(Local files will be moved to trash)",
 	MODAL_CONFIRM_BUTTON: "Confirm",
 	MODAL_CANCEL_BUTTON: "Cancel",
 
@@ -24,7 +24,7 @@ export default {
 	NOTICE_SUCCESS_CACHE: "Successfully retrieved {{name}} from cache!",
 	NOTICE_ERROR_SINGLE: "Failed to hoist {{name}}.",
 	NOTICE_NO_IMAGES: "No local images found in this note.",
-	NOTICE_NO_MARKDOWN: "No active markdown note found.",
+	NOTICE_NO_MARKDOWN: "No active Markdown note found.",
 	NOTICE_CACHE_CLEARED: "Upload cache cleared successfully!",
 
 	// Settings

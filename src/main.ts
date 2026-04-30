@@ -23,7 +23,7 @@ export default class ImageHoistPlugin extends Plugin {
 
 		this.vaultAdapter = new ObsidianVaultAdapter(this.app);
 		
-		this.registerDomEvent(document, "contextmenu", (evt: MouseEvent) => {
+		this.registerDomEvent(activeDocument, "contextmenu", (evt: MouseEvent) => {
 			this.lastContextTarget = evt.target as HTMLElement;
 		}, { capture: true });
 

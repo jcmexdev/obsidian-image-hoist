@@ -8,7 +8,8 @@ import { t } from "../i18n";
 export function registerAutoHoistHandler(plugin: ImageHoistPlugin) {
 	// Handle Paste
 	plugin.registerEvent(
-		plugin.app.workspace.on("editor-paste", async (evt: ClipboardEvent, editor: Editor, view: MarkdownView) => {
+		plugin.app.workspace.on("editor-paste", async (evt: ClipboardEvent, editor: Editor, _view: MarkdownView) => {
+			if (evt.defaultPrevented) return;
 			if (!plugin.settings.autoHoist) return;
 			
 			const files = evt.clipboardData?.files;
@@ -26,7 +27,8 @@ export function registerAutoHoistHandler(plugin: ImageHoistPlugin) {
 
 	// Handle Drop
 	plugin.registerEvent(
-		plugin.app.workspace.on("editor-drop", async (evt: DragEvent, editor: Editor, view: MarkdownView) => {
+		plugin.app.workspace.on("editor-drop", async (evt: DragEvent, editor: Editor, _view: MarkdownView) => {
+			if (evt.defaultPrevented) return;
 			if (!plugin.settings.autoHoist) return;
 
 			const files = evt.dataTransfer?.files;

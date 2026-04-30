@@ -8,29 +8,7 @@ export default tseslint.config(
 			globals: {
 				...globals.browser,
 			},
-			parserOptions: {
-				projectService: {
-					allowDefaultProject: [
-						'eslint.config.js',
-						'manifest.json'
-					]
-				},
-				tsconfigRootDir: import.meta.dirname,
-				extraFileExtensions: ['.json']
-			},
 		},
-	},
-	...obsidianmd.configs.recommended,
-	{
-		plugins: {
-			obsidianmd,
-		},
-		rules: {
-			"obsidianmd/ui/sentence-case": ["error", {
-				"brands": ["ImgBB"],
-				"acronyms": ["API"]
-			}]
-		}
 	},
 	{
 		ignores: [
@@ -41,7 +19,32 @@ export default tseslint.config(
 			"version-bump.mjs",
 			"versions.json",
 			"main.js",
+			"package-lock.json",
 		],
+	},
+	// Obsidian recommended configs
+	...obsidianmd.configs.recommended,
+	...obsidianmd.configs.recommendedWithLocalesEn,
+	// TypeScript recommended and typed rules
+	...tseslint.configs.recommendedTypeChecked.map(config => ({
+		...config,
+		files: ["**/*.ts"],
+	})),
+	{
+		files: ["**/*.ts"],
+		languageOptions: {
+			parserOptions: {
+				projectService: true,
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
+		rules: {
+			"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+			"@typescript-eslint/require-await": "error",
+			"obsidianmd/ui/sentence-case": ["error", {
+				"brands": ["ImgBB", "Markdown"],
+				"acronyms": ["API"]
+			}]
+		}
 	}
 );
-

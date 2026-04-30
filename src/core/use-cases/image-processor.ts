@@ -121,7 +121,7 @@ export class ImageProcessor {
 
 				processedCount++;
 				if (result.isCacheHit) cacheCount++;
-			} catch (error) {
+			} catch {
 				// We still throw or ignore quietly as per user request to remove logs
 			}
 		}
