@@ -1,53 +1,54 @@
-name: Release Obsidian plugin
+name: Build obsidian plugin
 
 on:
-  push:
-    tags:
-      - "*"
+    push:
+        tags:
+            - "*"
+
+env:
+    PLUGIN_NAME: obsidian-git
+
+permissions:
+    id-token: write
+    contents: write
+    attestations: write
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22.x"
-          cache: "npm"
-
-      - name: Build plugin
-        run: |
-          npm ci
-          npm run build
-
-      - name: Validate version
-        run: |
-          tag="${GITHUB_REF#refs/tags/}"
-          manifest_version=$(jq -r '.version' manifest.json)
-          if [ "$tag" != "$manifest_version" ]; then
-            echo "Error: Tag '$tag' does not match manifest version '$manifest_version'"
-            echo "Obsidian releases require the tag to match the version in manifest.json exactly (e.g., 1.0.0, not v1.0.0)."
-            exit 1
-          fi
-
-      - name: Create release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          tag="${GITHUB_REF#refs/tags/}"
-          
-          # Prepare list of files to upload
-          files=("main.js" "manifest.json")
-          if [ -f "styles.css" ]; then
-            files+=("styles.css")
-          fi
-
-          gh release create "$tag" \
-            --title="$tag" \
-            --draft \
-            --generate-notes \
-            "${files[@]}"
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: latest
+            - name: Build
+              id: build
+              run: |
+                  pnpm install
+                  pnpm run build --if-present
+                  mkdir ${{ env.PLUGIN_NAME }}
+                  cp main.js manifest.json styles.css ${{ env.PLUGIN_NAME }}
+                  zip -r ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip ${{ env.PLUGIN_NAME }}
+            - name: Attest build provenance
+              uses: actions/attest@v4
+              with:
+                  subject-path: |
+                      main.js
+                      manifest.json
+                      styles.css
+                      ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip
+            - name: Create Release
+              id: create_release
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: ${{ github.ref }}
+                  name: ${{ github.ref_name }}
+                  generate_release_notes: false
+                  body: See the [changelog](https://github.com/Vinzent03/obsidian-git/blob/master/CHANGELOG.md) for details.
+                  draft: false
+                  prerelease: false
+                  files: |
+                      main.js
+                      manifest.json
+                      styles.css
+                      ${{ env.PLUGIN_NAME }}-${{ github.ref_name }}.zip
