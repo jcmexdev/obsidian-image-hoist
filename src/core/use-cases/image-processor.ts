@@ -1,51 +1,100 @@
-import { ImageUploader } from '../ports/uploader';
-import { VaultService } from '../ports/vault';
+import { ImageUploader } from "../ports/uploader";
+import { VaultService } from "../ports/vault";
 
+export interface ImageMetadata {
+	path: string;
+	name: string;
+	start: number;
+	end: number;
+	originalLink: string;
+}
+
+/**
+ * Core business logic for processing and hoisting images.
+ * Decoupled from Obsidian APIs via VaultService and ImageUploader ports.
+ */
 export class ImageProcessor {
-    constructor(
-        private uploader: ImageUploader,
-        private vault: VaultService
-    ) {}
+	constructor(
+		private uploader: ImageUploader,
+		private vault: VaultService,
+	) {}
 
-    async processImage(fileData: ArrayBuffer, fileName: string, altText: string = ""): Promise<string> {
-        const url = await this.uploader.upload(fileData, fileName);
-        // Using the preserved altText which now contains original info like "imagen.png|100"
-        return `![${altText}](${url})`;
-    }
+	/**
+	 * Uploads a single image and returns the markdown link representation.
+	 */
+	async processImage(
+		fileData: ArrayBuffer,
+		fileName: string,
+		altText = "",
+	): Promise<string> {
+		const url = await this.uploader.upload(fileData, fileName);
+		// Preserves the altText which might contain original filename and dimensions
+		return `![${altText}](${url})`;
+	}
 
-    async hoistAllImages(notePath: string, deleteAfterUpload: boolean = false): Promise<number> {
-        const images = await this.vault.getImagesInFile(notePath);
-        if (images.length === 0) return 0;
+	/**
+	 * Hoists a single image at a specific location in a note.
+	 */
+	async hoistSingleImage(
+		notePath: string,
+		image: ImageMetadata,
+		deleteAfterUpload = false,
+	): Promise<void> {
+		let content = await this.vault.readFile(notePath);
 
-        let content = await this.vault.readFile(notePath);
+		try {
+			const data = await this.vault.readBinary(image.path);
+			const newLink = await this.processImage(data, image.name, image.originalLink);
 
-        // Sort by start offset descending to avoid shifting issues
-        const sortedImages = [...images].sort((a, b) => b.start - a.start);
-        let processedCount = 0;
+			// Precise string replacement based on offsets
+			content = content.substring(0, image.start) + newLink + content.substring(image.end);
 
-        for (const img of sortedImages) {
-            try {
-                const data = await this.vault.readBinary(img.path);
-                // We pass the originalLink (e.g. "imagen.png|100")
-                const newLink = await this.processImage(data, img.name, img.originalLink);
+			await this.vault.writeFile(notePath, content);
 
-                // Precise replacement using offsets
-                content = content.substring(0, img.start) + newLink + content.substring(img.end);
-                
-                if (deleteAfterUpload) {
-                    await this.vault.deleteFile(img.path);
-                }
-                
-                processedCount++;
-            } catch (error) {
-                console.error(`Failed to hoist image ${img.name}:`, error);
-            }
-        }
+			if (deleteAfterUpload) {
+				await this.vault.deleteFile(image.path);
+			}
+		} catch (error) {
+			throw new Error(`Failed to hoist image ${image.name}: ${String(error)}`);
+		}
+	}
 
-        if (processedCount > 0) {
-            await this.vault.writeFile(notePath, content);
-        }
+	/**
+	 * Hoists all local images found in a note.
+	 * Replaces them in reverse order to ensure offsets remain valid during processing.
+	 */
+	async hoistAllImages(notePath: string, deleteAfterUpload = false): Promise<number> {
+		const images = await this.vault.getImagesInFile(notePath);
+		if (images.length === 0) return 0;
 
-        return processedCount;
-    }
+		let content = await this.vault.readFile(notePath);
+
+		// Important: sort by start offset descending to avoid shifting the content 
+		// while we replace multiple instances of text.
+		const sortedImages = [...images].sort((a, b) => b.start - a.start);
+		let processedCount = 0;
+
+		for (const img of sortedImages) {
+			try {
+				const data = await this.vault.readBinary(img.path);
+				const newLink = await this.processImage(data, img.name, img.originalLink);
+
+				content = content.substring(0, img.start) + newLink + content.substring(img.end);
+
+				if (deleteAfterUpload) {
+					await this.vault.deleteFile(img.path);
+				}
+
+				processedCount++;
+			} catch (error) {
+				console.error(`Failed to hoist image ${img.name}:`, error);
+			}
+		}
+
+		if (processedCount > 0) {
+			await this.vault.writeFile(notePath, content);
+		}
+
+		return processedCount;
+	}
 }
