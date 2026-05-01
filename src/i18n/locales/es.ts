@@ -10,14 +10,14 @@ export default {
 	MODAL_CONFIRM_TITLE: "Confirmar subida de imágenes",
 	MODAL_CONFIRM_SINGLE: "¿Estás seguro de que quieres subir \"{{name}}\"? El archivo local se moverá a la papelera.",
 	MODAL_CONFIRM_ALL: "Se han encontrado {{count}} imágenes locales. ¿Quieres subirlas a ImgBB y reemplazar los enlaces?{{trash}}",
-	MODAL_TRASH_WARNING: " (Los archivos locales se moverán a la papelera)",
+	MODAL_TRASH_WARNING: "Los archivos locales se moverán a la papelera",
 	MODAL_CONFIRM_BUTTON: "Confirmar",
 	MODAL_CANCEL_BUTTON: "Cancelar",
 
 	// Notices
 	NOTICE_STARTING_ALL: "Iniciando subida de {{count}} imágenes...",
 	NOTICE_SUCCESS_ALL: "¡Se han subido {{count}} imágenes con éxito!",
-	NOTICE_SUCCESS_ALL_CACHE: "¡Se han procesado {{count}} imágenes ({{cacheCount}} desde la caché)!",
+	NOTICE_SUCCESS_ALL_CACHE: " se han procesado {{count}} imágenes ({{cacheCount}} desde la caché)!",
 	NOTICE_ERROR_ALL: "Error durante el proceso de subida.",
 	NOTICE_STARTING_SINGLE: "Subiendo imagen: {{name}}...",
 	NOTICE_SUCCESS_SINGLE: "¡{{name}} subida con éxito!",
@@ -28,7 +28,7 @@ export default {
 	NOTICE_CACHE_CLEARED: "¡La caché de subidas se ha limpiado con éxito!",
 
 	// Settings
-	SETTINGS_TITLE: "Ajustes de Image hoist",
+	SETTINGS_TITLE: "Ajustes de Image Hoist",
 	SETTINGS_API_KEY_NAME: "Clave API de ImgBB",
 	SETTINGS_API_KEY_DESC: "Selecciona el secreto que contiene tu clave API de ImgBB del SecretStorage de Obsidian.",
 	SETTINGS_AUTO_HOIST_NAME: "Subida automática al pegar o arrastrar",
