@@ -42,11 +42,11 @@ export default tseslint.config(
 			"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
 			"@typescript-eslint/require-await": "error",
 			"obsidianmd/ui/sentence-case": ["error", {
-				"brands": ["ImgBB", "Markdown", "Obsidian", "SecretStorage", "Image Hoist"],
+				"brands": ["ImgBB", "Markdown", "Obsidian", "SecretStorage"],
 				"acronyms": ["API"]
 			}],
 			"obsidianmd/ui/sentence-case-locale-module": ["error", {
-				"brands": ["ImgBB", "Markdown", "Obsidian", "SecretStorage", "Image Hoist"],
+				"brands": ["ImgBB", "Markdown", "Obsidian", "SecretStorage"],
 				"acronyms": ["API"]
 			}]
 		}

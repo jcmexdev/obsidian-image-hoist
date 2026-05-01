@@ -7,7 +7,7 @@ export default {
 	CONTEXT_MENU_HOIST_ALL: "Hoist all images in this note",
 	
 	// Modals
-	MODAL_CONFIRM_TITLE: "Confirm Image Hoist",
+	MODAL_CONFIRM_TITLE: "Confirm image hoist",
 	MODAL_CONFIRM_SINGLE: "Are you sure you want to hoist \"{{name}}\"? The local file will be moved to trash.",
 	MODAL_CONFIRM_ALL: "Found {{count}} local images. Do you want to hoist them to ImgBB and replace the links?{{trash}}",
 	MODAL_TRASH_WARNING: "Local files will be moved to trash",
@@ -28,7 +28,7 @@ export default {
 	NOTICE_CACHE_CLEARED: "Upload cache cleared successfully!",
 
 	// Settings
-	SETTINGS_TITLE: "Image Hoist settings",
+	SETTINGS_TITLE: "Image hoist settings",
 	SETTINGS_API_KEY_NAME: "ImgBB API key",
 	SETTINGS_API_KEY_DESC: "Select the secret that contains your ImgBB API key from Obsidian's SecretStorage.",
 	SETTINGS_AUTO_HOIST_NAME: "Auto-hoist on paste or drag",
