@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-image-hoist",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Automatically uploads local vault images to ImgBB and replaces them with remote links to optimize storage.",
 	"main": "main.js",
 	"type": "module",
