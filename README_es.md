@@ -1,36 +1,68 @@
 # Image Hoist para Obsidian
 
+[Read in English 🇺🇸](README.md)
+
 ![hero.png](https://i.ibb.co/21VF4jVd/hero-png.jpg)
 
-**Olvídate de las notas pesadas y las imágenes que no cargan.**
+Sube automáticamente tus imágenes locales a la nube ([ImgBB](https://imgbb.com/)) para mantener tu vault ligero y facilitar la sincronización. ¡Se acabaron los enlaces rotos al copiar tus notas a un blog o correo!
 
-Image Hoist es la herramienta definitiva para mantener tu vault de Obsidian ligero, rápido y 100% compartible. Sube automáticamente tus imágenes locales a la nube ([ImgBB](https://imgbb.com/)) y las reemplaza con enlaces que funcionan en cualquier lugar.
+## 🚀 Características
 
-## 🌟 ¿Por qué necesitas Image Hoist?
+- **Ahorra espacio**: Deja de almacenar imágenes pesadas en tu dispositivo local.
+- **Subida Automática**: Pega una imagen y se sube sola en segundo plano.
+- **Evita Duplicados**: Reconoce si ya subiste una foto y reutiliza el enlace.
+- **Limpieza Rápida**: Convierte todas las fotos locales de una nota vieja con un solo clic.
 
-- **Ahorra espacio masivo**: Deja de acumular gigabytes de fotos en tu dispositivo. Reserva tu almacenamiento para lo que importa: tus ideas.
-- **Sincronización ultra rápida**: Al tener tus fotos en la nube, sincronizar tus notas entre dispositivos (móvil, tablet, PC) es instantáneo.
-- **Comparte sin fricción**: Cuando copies una nota para un blog, un correo o para otra persona, ¡las imágenes se verán de verdad! Se acabaron los enlaces rotos.
-- **Esfuerzo cero**: Pega una imagen y olvídate. El plugin se encarga de subirla y poner el enlace por ti en segundo plano.
+## 🛠️ Inicio Rápido
 
-## 🚀 Beneficios principales
-
-- **Configura y olvida**: Activa la "Subida automática" y cada imagen que pegues irá directa a la nube. Sin archivos locales, sin desorden.
-- **Subidas inteligentes**: ¿Ya subiste la misma foto antes? El plugin es lo suficientemente listo para reconocerla y reutilizar el enlace existente al instante.
-- **Limpieza de notas**: ¿Tienes una nota vieja llena de fotos locales? Con un solo clic, toda la nota se "limpia" y las fotos pasan a la nube.
-- **Seguro y privado**: Tus fotos son tuyas. Tus claves de acceso se mantienen privadas y seguras dentro de Obsidian.
-
-## 🛠️ Inicio rápido
-
-1. **Instala**: Añade el plugin a tu carpeta de Obsidian.
-2. **Conecta**: Consigue una clave gratuita en [ImgBB](https://api.imgbb.com/) y pégala en los ajustes del plugin.
-3. **Disfruta**: Empieza a pegar fotos o haz clic derecho en cualquier imagen existente para subirla a la nube.
+1. Instala el plugin en Obsidian.
+2. Consigue una clave gratuita en [ImgBB](https://api.imgbb.com/) y pégala en los ajustes.
 
 ## 📖 Cómo usarlo
 
-- **Arrastrar y soltar**: Simplemente arrastra una foto a tu nota; irá directa a la nube (si lo activas).
-- **Clic derecho**: ¿Ves una foto local? Haz clic derecho y selecciona **Subir esta imagen (hoist)**.
-- **El botón mágico**: Usa la Paleta de Comandos (`Cmd/Ctrl + P`) y ejecuta **Subir todas las imágenes de la nota** para limpiar una página entera de una sola vez.
+> ⚠️ **IMPORTANTE**: Este plugin actualmente **SOLO funciona cuando tu editor está en Modo Fuente (Source Mode)**.
+
+### 1. Subir una imagen local del Vault
+La forma más cómoda es hacer **clic derecho sobre la imagen** y seleccionar **Subir esta imagen (hoist)**. También puedes poner el cursor sobre ella y ejecutar el comando desde la Paleta de Comandos.
+
+![Subir una sola imagen](assets/hoist-one-image.webp)
+
+### 2. Subida Masiva de imágenes locales del Vault (El botón mágico)
+**Haz clic derecho en cualquier parte de tu nota** y selecciona **Subir todas las imágenes de esta nota (hoist)** para una acción masiva ultrarrápida. También puedes usar la Paleta de Comandos (`Cmd/Ctrl + P`) y ejecutar **Subir todas las imágenes de la nota**.
+
+![Subida Masiva](assets/hoist-bulk-images.webp)
+
+### 3. Subida Automática al Pegar
+Simplemente arrastra y suelta o pega una foto en tu nota; irá directa a la nube (si lo activas en los ajustes).
+
+![Subida Automática al Pegar](assets/auto-hoist-on-paste.webp)
+
+### 4. Eliminar Archivos Locales
+Cuando subes una imagen, el archivo local se elimina automáticamente de tu vault para ahorrar espacio (si lo activas en los ajustes).
+
+![Eliminar Archivos Locales](assets/delete-on-hoist.webp)
+
+## 💻 Desarrollo
+
+Si deseas contribuir o compilar el plugin desde el código fuente:
+
+1. Clona este repositorio en la carpeta de plugins de tu vault de Obsidian: `<vault>/.obsidian/plugins/obsidian-image-hoist`
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Inicia la compilación de desarrollo en modo activo (watch):
+   ```bash
+   npm run dev
+   ```
+4. Para compilar una versión de producción:
+   ```bash
+   npm run build
+   ```
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas! Siéntete libre de abrir un issue o enviar un pull request para sugerir mejoras, reportar errores o añadir nuevas funcionalidades.
 
 ## 📄 Licencia
 
